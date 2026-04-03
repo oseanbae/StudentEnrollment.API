@@ -159,7 +159,7 @@ Project setup, real database connection, Student and Course models, first migrat
 
 **Deliverables:**
 - Project created
-- SQL Server connected
+- SQLite connected
 - Student.cs and Course.cs with validation attributes
 - AppDbContext.cs with Students and Courses DbSets
 - First migration applied and database created
