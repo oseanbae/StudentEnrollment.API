@@ -314,7 +314,7 @@ Cleaning up, testing edge cases, reviewing everything you built.
 | Foreign keys | Phase 3 |
 | Business logic before insert | Phase 3 |
 | `Include()` for related data | Phase 4 |
-| LINQ `Where()` and `Select()` | Phase 4 |
+| LINQ `Where()` and `Select()` | Phase 4 |                                                                                
 | Nested routes | Phase 4 |
 | Enriched DTOs | Phase 4 |
 

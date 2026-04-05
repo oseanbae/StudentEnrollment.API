@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
 using static StudentEnrollment.API.DTOs.StudentDTO;
+using static StudentEnrollment.API.DTOs.CourseDTO;
 
 namespace StudentEnrollment.API.Controllers
 {
@@ -43,6 +44,20 @@ namespace StudentEnrollment.API.Controllers
             return StudentToDTO(student);
         }
 
+        // GET: api/students/{id}/courses
+        [HttpGet("{id}/courses")]
+        public async Task<ActionResult<IEnumerable<CourseReadDTO>>> GetStudentCourses(long id)
+        {
+            var student = await _context.Students.FindAsync(id);
+            if (student == null) return NotFound($"Student with ID: {id} doesnt exist");
+
+            return await _context.Enrollments
+                .Include(e => e.Course)
+                .Where(e => e.StudentId == student.Id)
+                .Select(c => CoursesController.CourseToDTO(c.Course))
+                .ToListAsync();
+        }
+         
         // PUT: api/Students/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -111,7 +126,7 @@ namespace StudentEnrollment.API.Controllers
             return _context.Students.Any(e => e.Id == id);
         }
 
-        private static StudentReadDTO StudentToDTO(Student student)
+        public static StudentReadDTO StudentToDTO(Student student)
         {
             return new StudentReadDTO
             {

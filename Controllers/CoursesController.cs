@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
 using static StudentEnrollment.API.DTOs.CourseDTO;
+using static StudentEnrollment.API.DTOs.StudentDTO;
 
 namespace StudentEnrollment.API.Controllers
 {
@@ -61,10 +62,24 @@ namespace StudentEnrollment.API.Controllers
                 if (!CourseExists(id))
                     return NotFound();
                 return Conflict("Concurrency conflict occurred while updating the course.");
-              
+
             }
 
             return NoContent();
+        }
+
+        // GET /api/courses/{id}/students
+        [HttpGet("{id}/students")]
+        public async Task<ActionResult<IEnumerable<StudentReadDTO>>> GetCourseStudents(long id)
+        {
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null) return NotFound();
+
+            return await _context.Enrollments
+                .Include(e => e.Student)
+                .Where(e => e.CourseId == id)
+                .Select(s => StudentsController.StudentToDTO(s.Student))
+                .ToListAsync();
         }
 
         // POST: api/Courses
@@ -107,7 +122,7 @@ namespace StudentEnrollment.API.Controllers
             return _context.Courses.Any(e => e.Id == id);
         }
 
-        private static CourseReadDTO CourseToDTO(Course course)
+        public static CourseReadDTO CourseToDTO(Course course)
         {
             return new CourseReadDTO
             {

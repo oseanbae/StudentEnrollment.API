@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
 using static StudentEnrollment.API.DTOs.EnrollmentDTO;
@@ -27,6 +29,8 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<IEnumerable<EnrollmentReadDTO>>> GetAllEnrollment()
         {
             return await _context.Enrollments
+                .Include(e => e.Student)
+                .Include(e => e.Course)
                 .Select(e =>EnrollmentToDTO(e))
                 .ToListAsync();
         }
@@ -35,11 +39,16 @@ namespace StudentEnrollment.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<EnrollmentReadDTO>> GetEnrollmentById(long id)
         {
-            var enrollment = await _context.Enrollments.FindAsync(id);
+            var enrollment = await _context.Enrollments
+                .Include(e => e.Student)
+                .Include(e => e.Course)
+                .FirstOrDefaultAsync(e => e.Id == id);
+                
             if (enrollment == null) return NotFound("Enrollment doesnt exist");
             return EnrollmentToDTO(enrollment);
         }
-
+        
+        //
         // POST: api/Enrollments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -92,6 +101,8 @@ namespace StudentEnrollment.API.Controllers
                 Id = enrollment.Id,
                 StudentId = enrollment.StudentId,
                 CourseId = enrollment.CourseId,
+                StudentName = enrollment.Student.Name,
+                CourseTitle = enrollment.Course.Title,
                 EnrollmentDate = enrollment.EnrollmentDate, 
             };
         }
