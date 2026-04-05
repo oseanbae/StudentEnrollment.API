@@ -33,7 +33,7 @@ namespace StudentEnrollment.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Course");
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("StudentEnrollment.API.Models.Enrollment", b =>
@@ -57,7 +57,7 @@ namespace StudentEnrollment.API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollment");
                 });
 
             modelBuilder.Entity("StudentEnrollment.API.Models.Student", b =>
@@ -73,7 +73,7 @@ namespace StudentEnrollment.API.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PhoneNumber")
@@ -82,7 +82,7 @@ namespace StudentEnrollment.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("StudentEnrollment.API.Models.Enrollment", b =>

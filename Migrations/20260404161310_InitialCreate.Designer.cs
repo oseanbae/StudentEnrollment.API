@@ -11,7 +11,7 @@ using StudentEnrollment.API.Data;
 namespace StudentEnrollment.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260403084855_InitialCreate")]
+    [Migration("20260404161310_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,7 +60,7 @@ namespace StudentEnrollment.API.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollment");
                 });
 
             modelBuilder.Entity("StudentEnrollment.API.Models.Student", b =>
@@ -71,17 +71,21 @@ namespace StudentEnrollment.API.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(225)
+                        .HasMaxLength(254)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(15)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Student");
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("StudentEnrollment.API.Models.Enrollment", b =>

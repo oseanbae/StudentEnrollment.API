@@ -7,7 +7,7 @@ namespace StudentEnrollment.API.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
-
-        public DbSet<Enrollment> Enrollments { get; set; } = null!;  
+        public DbSet<Student> Students { get; set; } = default!;
+        public DbSet<Course> Courses { get; set; } = default!;
     }
 }
