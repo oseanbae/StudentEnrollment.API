@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
-using static StudentEnrollment.API.DTOs.CourseDTO;
-using static StudentEnrollment.API.DTOs.StudentDTO;
+using StudentEnrollment.API.DTOs;
+using StudentEnrollment.API.Helpers;
 
 namespace StudentEnrollment.API.Controllers
 {
@@ -29,7 +23,7 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<IEnumerable<CourseReadDTO>>> GetAllCourse()
         {
             return await _context.Courses
-                .Select(c => CourseToDTO(c))
+                .Select(c => MappingHelper.CourseToDTO(c))
                 .ToListAsync();
         }
 
@@ -38,8 +32,8 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<CourseReadDTO>> GetCourseById(long id)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null) return NotFound();
-            return CourseToDTO(course);
+            if (course == null) return NotFound($"Course with ID: {id} doesnt exist");
+            return MappingHelper.CourseToDTO(course);
         }
 
         // PUT: api/Courses/5
@@ -48,7 +42,7 @@ namespace StudentEnrollment.API.Controllers
         public async Task<IActionResult> UpdateCourse(long id, CourseUpdateDTO courseDTO)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null) return NotFound();
+            if (course == null) return NotFound($"Course with ID: {id} doesnt exist");
 
             course.Title = courseDTO.Title;
             course.Credits = courseDTO.Credits;
@@ -60,7 +54,7 @@ namespace StudentEnrollment.API.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 if (!CourseExists(id))
-                    return NotFound();
+                    return NotFound($"Course with ID: {id} doesnt exist");
                 return Conflict("Concurrency conflict occurred while updating the course.");
 
             }
@@ -73,12 +67,12 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<IEnumerable<StudentReadDTO>>> GetCourseStudents(long id)
         {
             var course = await _context.Courses.FindAsync(id);
-            if (course == null) return NotFound();
+            if (course == null) return NotFound($"Course with ID: {id} doesnt exist");
 
             return await _context.Enrollments
                 .Include(e => e.Student)
                 .Where(e => e.CourseId == id)
-                .Select(s => StudentsController.StudentToDTO(s.Student))
+                .Select(s => MappingHelper.StudentToDTO(s.Student))
                 .ToListAsync();
         }
 
@@ -98,7 +92,7 @@ namespace StudentEnrollment.API.Controllers
             _context.Courses.Add(newCourse);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetCourseById), new { id = newCourse.Id }, CourseToDTO(newCourse));
+            return CreatedAtAction(nameof(GetCourseById), new { id = newCourse.Id }, MappingHelper.CourseToDTO(newCourse));
         }
 
         // DELETE: api/Courses/5
@@ -108,7 +102,7 @@ namespace StudentEnrollment.API.Controllers
             var course = await _context.Courses.FindAsync(id);
             if (course == null)
             {
-                return NotFound();
+                return NotFound($"Course with ID: {id} doesnt exist");
             }
 
             _context.Courses.Remove(course);
@@ -120,16 +114,6 @@ namespace StudentEnrollment.API.Controllers
         private bool CourseExists(long id)
         {
             return _context.Courses.Any(e => e.Id == id);
-        }
-
-        public static CourseReadDTO CourseToDTO(Course course)
-        {
-            return new CourseReadDTO
-            {
-                Id = course.Id,
-                Title = course.Title,
-                Credits = course.Credits
-            };
         }
     }
 }

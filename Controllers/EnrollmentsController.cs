@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
-using static StudentEnrollment.API.DTOs.EnrollmentDTO;
+using StudentEnrollment.API.DTOs;
+using StudentEnrollment.API.Helpers;
 
 namespace StudentEnrollment.API.Controllers
 {
@@ -31,7 +25,7 @@ namespace StudentEnrollment.API.Controllers
             return await _context.Enrollments
                 .Include(e => e.Student)
                 .Include(e => e.Course)
-                .Select(e =>EnrollmentToDTO(e))
+                .Select(e => MappingHelper.EnrollmentToDTO(e))
                 .ToListAsync();
         }
 
@@ -44,11 +38,10 @@ namespace StudentEnrollment.API.Controllers
                 .Include(e => e.Course)
                 .FirstOrDefaultAsync(e => e.Id == id);
                 
-            if (enrollment == null) return NotFound("Enrollment doesnt exist");
-            return EnrollmentToDTO(enrollment);
+            if (enrollment == null) return NotFound($"Enrollment with ID: {id} doesnt exist");
+            return MappingHelper.EnrollmentToDTO(enrollment);
         }
         
-        //
         // POST: api/Enrollments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -75,7 +68,7 @@ namespace StudentEnrollment.API.Controllers
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetEnrollmentById), new { id = enrollment.Id }, EnrollmentToDTO(enrollment));
+            return CreatedAtAction(nameof(GetEnrollmentById), new { id = enrollment.Id }, MappingHelper.EnrollmentToDTO(enrollment));
         }
 
         // DELETE: api/Enrollments/5
@@ -85,26 +78,13 @@ namespace StudentEnrollment.API.Controllers
             var enrollment = await _context.Enrollments.FindAsync(id);
             if (enrollment == null)
             {
-                return NotFound();
+                return NotFound($"Enrollment with ID: {id} doesnt exist");
             }
 
             _context.Enrollments.Remove(enrollment);
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private static EnrollmentReadDTO EnrollmentToDTO(Enrollment enrollment)
-        {
-            return new EnrollmentReadDTO
-            {
-                Id = enrollment.Id,
-                StudentId = enrollment.StudentId,
-                CourseId = enrollment.CourseId,
-                StudentName = enrollment.Student.Name,
-                CourseTitle = enrollment.Course.Title,
-                EnrollmentDate = enrollment.EnrollmentDate, 
-            };
         }
     }
 }

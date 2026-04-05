@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using StudentEnrollment.API.Data;
 using StudentEnrollment.API.Models;
-using static StudentEnrollment.API.DTOs.StudentDTO;
-using static StudentEnrollment.API.DTOs.CourseDTO;
+using StudentEnrollment.API.DTOs;
+using StudentEnrollment.API.Helpers;
 
 namespace StudentEnrollment.API.Controllers
 {
@@ -22,10 +21,10 @@ namespace StudentEnrollment.API.Controllers
 
         // GET: api/Students
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<StudentReadDTO>>> GeAllStudent()
+        public async Task<ActionResult<IEnumerable<StudentReadDTO>>> GetAllStudent()
         {
             var students = await _context.Students
-                .Select(s => StudentToDTO(s))
+                .Select(s => MappingHelper.StudentToDTO(s))
                 .ToListAsync();
             return Ok(students);
         }
@@ -41,7 +40,7 @@ namespace StudentEnrollment.API.Controllers
                 return NotFound($"Student with ID: {id} doesnt exist");
             }
 
-            return StudentToDTO(student);
+            return MappingHelper.StudentToDTO(student);
         }
 
         // GET: api/students/{id}/courses
@@ -53,8 +52,8 @@ namespace StudentEnrollment.API.Controllers
 
             return await _context.Enrollments
                 .Include(e => e.Course)
-                .Where(e => e.StudentId == student.Id)
-                .Select(c => CoursesController.CourseToDTO(c.Course))
+                .Where(e => e.StudentId == id)
+                .Select(c => MappingHelper.CourseToDTO(c.Course))
                 .ToListAsync();
         }
          
@@ -102,7 +101,7 @@ namespace StudentEnrollment.API.Controllers
             _context.Students.Add(newStudent);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetStudentById), new { id = newStudent.Id }, StudentToDTO(newStudent));
+            return CreatedAtAction(nameof(GetStudentById), new { id = newStudent.Id }, MappingHelper.StudentToDTO(newStudent));
         }
 
         // DELETE: api/Students/5
@@ -125,17 +124,5 @@ namespace StudentEnrollment.API.Controllers
         {
             return _context.Students.Any(e => e.Id == id);
         }
-
-        public static StudentReadDTO StudentToDTO(Student student)
-        {
-            return new StudentReadDTO
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Email = student.Email,
-                PhoneNumber = student.PhoneNumber,
-            };
-        }
-
     }
 }

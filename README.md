@@ -111,6 +111,7 @@ When you get to **Step 2** and **Step 3**, remember to use the `[EmailAddress]` 
 | PUT | /api/courses/{id} | Update course |
 | DELETE | /api/courses/{id} | Delete course |
 | GET | /api/enrollments | Get all enrollments |
+| GET | /api/enrollments/{id} | Get one enrollment |
 | POST | /api/enrollments | Enroll student in course |
 | DELETE | /api/enrollments/{id} | Remove enrollment |
 | GET | /api/students/{id}/courses | Get all courses of a student |
@@ -273,7 +274,7 @@ Cleaning up, testing edge cases, reviewing everything you built.
 - Revisiting the commented Todo API to see how far you've come
 
 **Deliverables:**
-- All 15 endpoints tested with valid and invalid inputs
+- All 16 endpoints tested with valid and invalid inputs
 - No entity returned directly anywhere
 - No hardcoded values
 - Code is readable and consistent
