@@ -18,4 +18,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="https://motif.land/api/motif.schema.json" /></VisualStudio></ProjectExtensions>
+
 </Project>
