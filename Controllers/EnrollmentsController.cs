@@ -23,8 +23,6 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<IEnumerable<EnrollmentReadDTO>>> GetAllEnrollment()
         {
             return await _context.Enrollments
-                .Include(e => e.Student)
-                .Include(e => e.Course)
                 .Select(e => MappingHelper.EnrollmentToDTO(e))
                 .ToListAsync();
         }
