@@ -6,10 +6,20 @@ var builder = WebApplication.CreateBuilder(args); // Creates a builder for confi
 // Add services to the container (dependency injection)
 builder.Services.AddControllers();               // Registers API controllers so they can handle HTTP requests
 builder.Services.AddEndpointsApiExplorer();     // Scans controllers/endpoints to generate metadata for OpenAPI/Swagger
-builder.Services.AddSwaggerGen();               // Registers Swagger generator to produce OpenAPI JSON (swagger.json)
+
+// Registers Swagger generator to produce OpenAPI JSON (swagger.json)
+builder.Services.AddSwaggerGen(opt =>
+    opt.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+    {
+        Title = "Student Enrollment API",
+        Version = "v1",
+        Description = "Handles students, courses, and enrollment."
+    })
+);               
 
 builder.Services.AddDbContext<AppDbContext>(options =>  // Registers your EF Core database context
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")) // Uses SQLite database with connection string from appsettings
+    // Uses SQLite database with connection string from appsettings
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")) 
 );
 
 var app = builder.Build(); // Builds the WebApplication, finalizing all configurations and services
