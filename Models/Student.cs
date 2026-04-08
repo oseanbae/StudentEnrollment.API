@@ -31,5 +31,6 @@ namespace StudentEnrollment.API.Models
         }
         private string? _phoneNumber;
 
+        public ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
     }
 }
