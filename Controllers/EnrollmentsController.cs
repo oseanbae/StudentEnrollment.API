@@ -34,8 +34,8 @@ namespace StudentEnrollment.API.Controllers
         public async Task<ActionResult<EnrollmentReadDTO>> GetEnrollmentById(long id)
         {
             var enrollment = await _context.Enrollments
-                .Include(e => e.Student)
-                .Include(e => e.Course)
+                .Include(e => e.Student.Name)
+                .Include(e => e.Course.Title)
                 .FirstOrDefaultAsync(e => e.Id == id);
                 
             if (enrollment == null) return NotFound($"Enrollment with ID: {id} doesnt exist");

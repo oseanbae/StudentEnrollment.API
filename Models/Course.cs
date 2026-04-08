@@ -17,6 +17,5 @@ namespace StudentEnrollment.API.Models
         [Required, Range(1, 6)]
         public int Credits { get; set; }
 
-        public ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
     }
 }
